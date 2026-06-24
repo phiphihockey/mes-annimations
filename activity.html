@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACM Activités — Fiche activité</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="logo">
+        🎨 ACM<br>Activités
+      </div>
+      <span class="logo-sub">Centre de loisirs</span>
+
+      <nav>
+        <h4>Dashboard</h4>
+        <a href="index.html">📊 Vue générale</a>
+
+        <h4>Activités</h4>
+        <a href="activities.html">📚 Toutes</a>
+        <a href="activities.html?category=Grand+jeu">🏴 Grand jeu</a>
+        <a href="activities.html?category=Sportive">🏃 Sportives</a>
+        <a href="activities.html?category=Manuelle">✂️ Manuelles</a>
+        <a href="activities.html?category=Artistique">🎭 Artistiques</a>
+        <a href="activities.html?category=Nature">🌳 Nature</a>
+        <a href="activities.html?category=Veillée">🌙 Veillées</a>
+
+        <h4>Gestion</h4>
+        <a href="admin.html">➕ Nouvelle activité</a>
+      </nav>
+
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+      <div id="activityDetail">
+        <!-- Rempli par JS -->
+        <div class="empty-state" style="margin-top:60px">
+          <div class="empty-icon">⏳</div>
+          <h3>Chargement…</h3>
+        </div>
+      </div>
+
+      <a href="activities.html" class="back-link">← Retour aux activités</a>
+
+    </main>
+
+  </div>
+
+  <script src="data/activities.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/activity.js"></script>
+</body>
+</html>

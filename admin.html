@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACM Activités — Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="logo">
+        🎨 ACM<br>Activités
+      </div>
+      <span class="logo-sub">Centre de loisirs</span>
+
+      <nav>
+        <h4>Dashboard</h4>
+        <a href="index.html">📊 Vue générale</a>
+
+        <h4>Activités</h4>
+        <a href="activities.html">📚 Toutes</a>
+        <a href="activities.html?category=Grand+jeu">🏴 Grand jeu</a>
+        <a href="activities.html?category=Sportive">🏃 Sportives</a>
+        <a href="activities.html?category=Manuelle">✂️ Manuelles</a>
+        <a href="activities.html?category=Artistique">🎭 Artistiques</a>
+        <a href="activities.html?category=Nature">🌳 Nature</a>
+        <a href="activities.html?category=Veillée">🌙 Veillées</a>
+
+        <h4>Gestion</h4>
+        <a href="admin.html" class="active">➕ Nouvelle activité</a>
+      </nav>
+
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+      <div class="page-header">
+        <h1>➕ Nouvelle activité</h1>
+        <p>Ajoute une activité à ta bibliothèque</p>
+      </div>
+
+      <!-- TABS -->
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="activities">➕ Nouvelle activité</button>
+        <button class="admin-tab-btn" data-tab="themes">🎨 Gérer les thèmes</button>
+        <button class="admin-tab-btn" data-tab="data">💾 Sauvegarder</button>
+      </div>
+
+      <!-- TAB: ACTIVITIES -->
+      <div id="tab-activities" class="admin-tab-content active">
+        <form class="admin-form" id="activityForm">
+
+          <input type="hidden" id="activityId">
+          <div id="formMessage" style="padding:12px;border-radius:10px;margin-bottom:16px;display:none;font-weight:700;font-size:14px"></div>
+
+          <div class="form-group">
+            <label>Titre de l'activité *</label>
+            <input type="text" id="title" placeholder="Ex: Chasse au trésor" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Catégorie *</label>
+            <select id="category" required>
+              <option value="">Choisir…</option>
+              <option>Grand jeu</option>
+              <option>Sportive</option>
+              <option>Manuelle</option>
+              <option>Artistique</option>
+              <option>Nature</option>
+              <option>Veillée</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Thème *</label>
+            <select id="theme" required>
+              <option value="">Choisir…</option>
+              <option>Océan</option>
+              <option>Camping</option>
+              <option>Horreur</option>
+              <option>Pirate</option>
+              <option>Sport</option>
+              <option>Nature</option>
+              <option>Contes</option>
+              <option>Aventure</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Âge *</label>
+            <select id="age" required>
+              <option value="">Choisir…</option>
+              <option>2-3 ans</option>
+              <option>4-5 ans</option>
+              <option>6-8 ans</option>
+              <option>9-13 ans</option>
+              <option>13 ans et plus</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Durée *</label>
+            <select id="duration" required>
+              <option value="">Choisir…</option>
+              <option>1h</option>
+              <option>1h30</option>
+              <option>2h</option>
+              <option>2h30</option>
+              <option>3h</option>
+              <option>1 jour</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Saison</label>
+            <select id="season">
+              <option value="Toutes saisons">Toutes saisons</option>
+              <option>Printemps</option>
+              <option>Été</option>
+              <option>Automne</option>
+              <option>Hiver</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Lieu</label>
+            <select id="location">
+              <option>Intérieur</option>
+              <option>Extérieur</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="description" placeholder="Décris le déroulement de l'activité…" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Matériel nécessaire (un par ligne)</label>
+          <textarea id="materials" placeholder="Ballons&#10;Feuilles&#10;Colle&#10;Ciseaux"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>URL de l'image (optionnelle)</label>
+          <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="favorite">
+            ⭐ Marquer comme favori
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">➕ Ajouter l'activité</button>
+        <button type="button" class="submit-btn" id="cancelEditBtn" style="background:var(--text-muted);display:none;margin-left:12px">Annuler</button>
+      </form>
+      </div>
+
+      <!-- TAB: THEMES -->
+      <div id="tab-themes" class="admin-tab-content">
+        <div style="padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+          <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:20px;color:var(--text)">🎨 Gérer les thèmes d'activité</h2>
+          <div id="themesContainer" style="display:grid;gap:12px;margin-bottom:28px"></div>
+          <div style="padding:20px;background:rgba(255,255,255,0.05);border-radius:14px;border:1px solid rgba(255,255,255,0.08)">
+            <div style="display:grid;grid-template-columns:1fr 100px;gap:12px;align-items:flex-end;margin-bottom:12px">
+              <div>
+                <label style="display:block;color:var(--text-soft);font-weight:700;margin-bottom:8px;font-size:13px">Ajouter un thème</label>
+                <input type="text" id="newThemeName" placeholder="Ex: Pompier" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:var(--text);border-radius:10px">
+              </div>
+              <div>
+                <label style="display:block;color:var(--text-soft);font-weight:700;margin-bottom:8px;font-size:13px">Couleur</label>
+                <input type="color" id="newThemeColor" value="#ff3b2f" style="width:100%;height:44px;border:none;border-radius:10px;cursor:pointer">
+              </div>
+            </div>
+            <button type="button" id="addThemeBtn" style="width:100%;padding:12px 16px;background:var(--primary);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer">➕ Ajouter le thème</button>
+            <div id="themeMessage" style="margin-top:12px;font-size:13px;color:var(--text-soft)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: DATA -->
+      <div id="tab-data" class="admin-tab-content">
+        <div style="padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:grid;gap:20px">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:16px;color:var(--text)">💾 Exporter les données</h2>
+            <p style="color:var(--text-soft);font-size:14px;margin-bottom:12px">Télécharge toutes tes activités et thèmes en JSON</p>
+            <button type="button" id="exportBtn" style="width:100%;padding:12px 16px;background:var(--primary);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer">⬇️ Exporter en JSON</button>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:20px">
+            <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:16px;color:var(--text)">📥 Importer les données</h2>
+            <p style="color:var(--text-soft);font-size:14px;margin-bottom:12px">Restaure tes activités et thèmes depuis un fichier JSON</p>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+            <button type="button" id="importBtn" style="width:100%;padding:12px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer">📤 Importer un fichier</button>
+            <div id="importMessage" style="margin-top:12px;font-size:13px;color:var(--text-soft)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste des activités existantes pour suppression -->
+      <section style="margin-top:48px">
+        <h2 style="font-family:var(--font-display);font-size:22px;color:var(--white);margin-bottom:20px;text-shadow:3px 3px 0 var(--black);">
+          🗑️ Activités existantes
+        </h2>
+        <div id="existingList"></div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="data/activities.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

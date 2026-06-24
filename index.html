@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACM Activités — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="logo">
+        🎨 ACM<br>Activités
+      </div>
+      <span class="logo-sub">Centre de loisirs</span>
+
+      <nav>
+
+        <h4>Dashboard</h4>
+
+        <a href="index.html" class="active">
+          📊 Vue générale
+        </a>
+
+        <h4>Activités</h4>
+
+        <a href="activities.html?category=">
+          📚 Toutes
+        </a>
+        <a href="activities.html?category=Grand+jeu">
+          🏴 Grand jeu
+        </a>
+        <a href="activities.html?category=Sportive">
+          🏃 Sportives
+        </a>
+        <a href="activities.html?category=Manuelle">
+          ✂️ Manuelles
+        </a>
+        <a href="activities.html?category=Artistique">
+          🎭 Artistiques
+        </a>
+        <a href="activities.html?category=Nature">
+          🌳 Nature
+        </a>
+        <a href="activities.html?category=Veillée">
+          🌙 Veillées
+        </a>
+
+        <h4>Gestion</h4>
+
+        <a href="admin.html">
+          ➕ Nouvelle activité
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="page-header">
+            <p class="eyebrow">Dashboard</p>
+            <h1>Vue d'ensemble de vos activités</h1>
+            <p>Vue d'ensemble de vos activités et de vos thèmes actifs.</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="search-group">
+            <input type="text" id="searchInput" placeholder="Rechercher une activité, un thème…">
+            <button id="searchBtn">🔍</button>
+          </div>
+          <button class="primary-btn" onclick="window.location='admin.html'">Nouvelle activité</button>
+          <div class="user-panel">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <strong>Animateur</strong>
+              <span>Centre de loisirs</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- KPI Cards -->
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <span>Total activités</span>
+          <h2 id="totalActivities">0</h2>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📂</div>
+          <span>Catégories</span>
+          <h2 id="totalCategories">0</h2>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎨</div>
+          <span>Thèmes</span>
+          <h2 id="totalThemes">0</h2>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <span>Activités favorites</span>
+          <h2 id="favoritesCount">0</h2>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="charts">
+        <div class="chart-card">
+          <h3>Répartition par catégories</h3>
+          <canvas id="categoryChart"></canvas>
+          <div class="chart-legend" id="categoryLegend"></div>
+        </div>
+        <div class="chart-card">
+          <h3>Répartition par thèmes</h3>
+          <canvas id="themeChart"></canvas>
+          <div class="chart-legend" id="themeLegend"></div>
+        </div>
+      </section>
+
+      <!-- Bottom -->
+      <section class="bottom dashboard-bottom">
+        <div class="recent card-panel">
+          <h3>Activités récentes</h3>
+          <div id="recentActivities"></div>
+        </div>
+        <div class="themes card-panel">
+          <h3>Top thèmes cette année</h3>
+          <div id="topThemes"></div>
+          <div class="theme-manager">
+            <div class="theme-manager-header">
+              <span>Personnaliser le thème</span>
+              <span id="activeThemeLabel"></span>
+            </div>
+            <div class="theme-list" id="themeList"></div>
+            <div id="themeMessage" class="theme-message"></div>
+            <form id="themeForm" class="theme-form">
+              <div class="form-group">
+                <label>Nom du thème</label>
+                <input type="text" id="themeName" placeholder="Ex : Pompier">
+              </div>
+              <div class="theme-inputs">
+                <div class="theme-input-group">
+                  <label>Fond principal</label>
+                  <input type="color" id="themeBg" value="#0d1728">
+                </div>
+                <div class="theme-input-group">
+                  <label>Surface</label>
+                  <input type="color" id="themeSurface" value="#13203a">
+                </div>
+                <div class="theme-input-group">
+                  <label>Surface douce</label>
+                  <input type="color" id="themeSurfaceSoft" value="#172a44">
+                </div>
+                <div class="theme-input-group">
+                  <label>Couleur primaire</label>
+                  <input type="color" id="themePrimary" value="#4b7bff">
+                </div>
+                <div class="theme-input-group">
+                  <label>Accent</label>
+                  <input type="color" id="themeAccent" value="#4ad1e0">
+                </div>
+                <div class="theme-input-group">
+                  <label>Highlight</label>
+                  <input type="color" id="themeHighlight" value="#f4b24a">
+                </div>
+              </div>
+              <button type="button" id="saveThemeBtn" class="view-btn small">Créer le thème</button>
+            </form>
+          </div>
+        </div>
+        <div class="summary card-panel">
+          <h3>Résumé rapide</h3>
+          <div class="summary-list">
+            <div class="summary-item">
+              <span>Cette semaine</span>
+              <strong id="weeklyCount">0 nouvelles activités</strong>
+            </div>
+            <div class="summary-item">
+              <span>Ce mois-ci</span>
+              <strong id="monthlyCount">0 nouvelles activités</strong>
+            </div>
+            <div class="summary-item">
+              <span>Activités favorites</span>
+              <strong id="favoritesSummary">0 activités</strong>
+            </div>
+            <div class="summary-item">
+              <span>Dernière activité ajoutée</span>
+              <strong id="lastAdded">Aucune activité</strong>
+            </div>
+          </div>
+          <a href="activities.html" class="view-btn small">Voir le rapport complet</a>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="data/activities.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

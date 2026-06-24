@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACM Activités — Catalogue</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="logo">
+        🎨 ACM<br>Activités
+      </div>
+      <span class="logo-sub">Centre de loisirs</span>
+
+      <nav>
+
+        <h4>Dashboard</h4>
+        <a href="index.html">📊 Vue générale</a>
+
+        <h4>Activités</h4>
+        <a href="activities.html" class="active">📚 Toutes</a>
+        <a href="activities.html?category=Grand+jeu">🗺️ Grand jeu</a>
+        <a href="activities.html?category=Sportive">🏃 Sportives</a>
+        <a href="activities.html?category=Manuelle">✂️ Manuelles</a>
+        <a href="activities.html?category=Artistique">🎨 Artistiques</a>
+        <a href="activities.html?category=Nature">🌳 Nature</a>
+        <a href="activities.html?category=Veillée">🌙 Veillées</a>
+
+        <h4>Gestion</h4>
+        <a href="admin.html">➕ Nouvelle activité</a>
+
+      </nav>
+
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+      <div class="page-header">
+        <h1>📚 Bibliothèque d'activités</h1>
+        <p>Toutes vos activités centralisées en un coup d'œil</p>
+      </div>
+
+      <!-- Filters -->
+      <section class="filters">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher une activité…">
+        <select id="categoryFilter">
+          <option value="">📂 Toutes catégories</option>
+        </select>
+        <select id="themeFilter">
+          <option value="">🎯 Tous thèmes</option>
+        </select>
+        <select id="ageFilter">
+          <option value="">👶 Tous âges</option>
+          <option>2-3 ans</option>
+          <option>4-5 ans</option>
+          <option>6-8 ans</option>
+          <option>9-13 ans</option>
+          <option>13 ans et plus</option>
+        </select>
+        <select id="sortFilter">
+          <option value="alpha">A-Z</option>
+          <option value="duration-asc">Durée croissante</option>
+          <option value="duration-desc">Durée décroissante</option>
+          <option value="used">Les plus utilisées</option>
+          <option value="favorites">Favoris en premier</option>
+        </select>
+        <span class="filter-count" id="filterCount"></span>
+      </section>
+
+      <!-- Grid -->
+      <section id="activitiesGrid"></section>
+
+    </main>
+
+  </div>
+
+  <script src="data/activities.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/activities.js"></script>
+</body>
+</html>
+
+
