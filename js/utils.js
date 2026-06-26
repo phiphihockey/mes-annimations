@@ -4,6 +4,7 @@
    ====================================== */
 
 const ACM_DATA_KEY = 'acm_activities';
+const ACM_ACTIVITY_INITIALIZED_KEY = 'acm_activities_initialized';
 const ACM_THEME_KEY = 'acm_theme_config';
 const ACM_THEME_PRESETS_KEY = 'acm_theme_presets';
 
@@ -177,6 +178,7 @@ function normalizeCategoryLabel(category) {
  */
 function getActivities() {
   const stored = localStorage.getItem(ACM_DATA_KEY);
+  const hasInitialized = localStorage.getItem(ACM_ACTIVITY_INITIALIZED_KEY) === 'true';
   let activities = [];
   const hasStoredData = stored !== null;
   
@@ -189,10 +191,11 @@ function getActivities() {
     } catch (e) { /* ignore corrupted data */ }
   }
 
-  // Fallback vers les données embarquées seulement si aucune donnée n'est encore enregistrée
-  if (!hasStoredData && typeof ACTIVITIES_DATA !== 'undefined' && ACTIVITIES_DATA.length > 0) {
+  // Fallback vers les données embarquées si aucune donnée n'a encore été initialisée
+  if ((!hasStoredData || (!hasInitialized && activities.length === 0)) && typeof ACTIVITIES_DATA !== 'undefined' && ACTIVITIES_DATA.length > 0) {
     activities = ACTIVITIES_DATA;
     localStorage.setItem(ACM_DATA_KEY, JSON.stringify(activities));
+    localStorage.setItem(ACM_ACTIVITY_INITIALIZED_KEY, 'true');
   }
 
   // Normalize age labels, categories and ensure all activities have usedCount
@@ -218,6 +221,7 @@ function getActivities() {
 function saveActivities(activities) {
   const list = Array.isArray(activities) ? activities : [];
   localStorage.setItem(ACM_DATA_KEY, JSON.stringify(list));
+  localStorage.setItem(ACM_ACTIVITY_INITIALIZED_KEY, 'true');
   window.dispatchEvent(new CustomEvent('activities-updated'));
 }
 
