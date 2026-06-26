@@ -178,16 +178,19 @@ function normalizeCategoryLabel(category) {
 function getActivities() {
   const stored = localStorage.getItem(ACM_DATA_KEY);
   let activities = [];
+  const hasStoredData = stored !== null;
   
-  if (stored) {
+  if (hasStoredData) {
     try {
       const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) activities = parsed;
+      if (Array.isArray(parsed)) {
+        activities = parsed;
+      }
     } catch (e) { /* ignore corrupted data */ }
   }
 
-  // Fallback vers les données embarquées
-  if (activities.length === 0 && typeof ACTIVITIES_DATA !== 'undefined' && ACTIVITIES_DATA.length > 0) {
+  // Fallback vers les données embarquées seulement si aucune donnée n'est encore enregistrée
+  if (!hasStoredData && typeof ACTIVITIES_DATA !== 'undefined' && ACTIVITIES_DATA.length > 0) {
     activities = ACTIVITIES_DATA;
     localStorage.setItem(ACM_DATA_KEY, JSON.stringify(activities));
   }
@@ -213,7 +216,8 @@ function getActivities() {
  * Sauvegarde les activités dans localStorage
  */
 function saveActivities(activities) {
-  localStorage.setItem(ACM_DATA_KEY, JSON.stringify(activities));
+  const list = Array.isArray(activities) ? activities : [];
+  localStorage.setItem(ACM_DATA_KEY, JSON.stringify(list));
   window.dispatchEvent(new CustomEvent('activities-updated'));
 }
 
