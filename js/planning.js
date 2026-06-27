@@ -13,6 +13,7 @@ let viewMode = 'week'; // 'week' or 'day'
 let currentDay = new Date();
 let touchMode = false;
 let selectedActivityId = null;
+let pendingImportedEvents = null;
 
 
 function getStartOfWeek(date) {
@@ -79,6 +80,7 @@ function createEventFromActivity(activity, date, startHour) {
     title: activity.title,
     date,
     startHour,
+    startMinute: 0,
     duration: activity.duration || '1h',
     theme: activity.theme || 'Autre',
     color: activity.theme ? getActivityThemeColor(activity.theme) : '#4b7bff'
@@ -103,6 +105,24 @@ function parseDurationMinutes(duration) {
   const numMatch = s.match(/^(\d+)$/);
   if (numMatch) return Number(numMatch[1]) * 60;
   return 60;
+}
+
+function parseTimeInput(value) {
+  const s = String(value).trim();
+  const match = s.match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (!match) return null;
+  const hour = Number(match[1]);
+  const minute = match[2] ? Number(match[2]) : 0;
+  if (Number.isNaN(hour) || Number.isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+  return hour * 60 + minute;
+}
+
+function formatDurationLabel(minutes) {
+  if (minutes % 60 === 0) return `${minutes / 60}h`;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}m`;
+  return `${hours}h${String(mins).padStart(2, '0')}`;
 }
 
 function formatTimeLabel(hour) {
@@ -180,24 +200,34 @@ function renderCalendar() {
 
   weekEvents.forEach(event => {
     const eventDate = new Date(event.date);
-    const slot = calendar.querySelector(`[data-date="${toDateKey(eventDate)}"]`);
-    if (!slot) return;
-    const row = slot.closest('.planner-hour-row');
-    const hourIndex = Number(event.startHour);
-    const startOffset = hourIndex - HOUR_START;
+    const startMinutes = Number(event.startHour) * 60 + (Number(event.startMinute) || 0);
+    const minuteOffset = Number(event.startMinute) || 0;
     const durationMinutes = parseDurationMinutes(event.duration);
     const eventBox = document.createElement('div');
     eventBox.className = 'planning-event';
     eventBox.dataset.eventId = event.id;
     eventBox.style.background = event.color;
-    eventBox.style.top = `${startOffset * SLOT_HEIGHT + 4}px`;
+    eventBox.style.top = `${(minuteOffset / 60) * SLOT_HEIGHT + 4}px`;
     // allow minute-precise height
     const computedHeight = Math.max(20, Math.round((durationMinutes / 60) * SLOT_HEIGHT) - 8);
     eventBox.style.height = `${computedHeight}px`;
-    eventBox.innerHTML = `<strong>${event.title}</strong><span>${event.duration}</span>`;
-    eventBox.draggable = true;
-    eventBox.addEventListener('dragstart', dragEventStart);
-    eventBox.addEventListener('click', () => openEditModal(event.id));
+
+    const header = document.createElement('div');
+    header.className = 'planning-event-header';
+    header.innerHTML = `<strong>${event.title}</strong><span>${event.duration}</span>`;
+    header.draggable = true;
+    header.addEventListener('dragstart', dragEventStart);
+    header.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEditModal(event.id);
+    });
+    eventBox.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'planning-event-body';
+    body.textContent = '';
+    eventBox.appendChild(body);
+
     // add resize handle
     const resizeHandle = document.createElement('div');
     resizeHandle.className = 'resize-handle';
@@ -251,7 +281,7 @@ function renderCalendar() {
     const slotWrapper = document.createElement('div');
     slotWrapper.className = 'planner-slot-wrapper';
     slotWrapper.appendChild(eventBox);
-    const targetSlot = calendar.querySelector(`.planner-slot[data-date="${toDateKey(eventDate)}"][data-hour="${hourIndex}"]`);
+    const targetSlot = calendar.querySelector(`.planner-slot[data-date="${toDateKey(eventDate)}"][data-hour="${Math.floor(startMinutes/60)}"]`);
     if (targetSlot) {
       targetSlot.appendChild(slotWrapper);
     }
@@ -314,6 +344,48 @@ function renderCalendar() {
       openCreateModal(date, hour);
     });
   });
+}
+
+function openImportModal(events) {
+  pendingImportedEvents = events.map(event => ({ ...event }));
+  const importModal = document.getElementById('importModal');
+  const info = document.getElementById('importModalInfo');
+  const startInput = document.getElementById('modalImportStart');
+  const endInput = document.getElementById('modalImportEnd');
+  if (!importModal || !startInput || !endInput || !info) return;
+
+  let defaultStart = '08:00';
+  let defaultEnd = '09:00';
+  if (pendingImportedEvents.length > 0) {
+    const first = pendingImportedEvents[0];
+    if (typeof first.startHour !== 'undefined') {
+      const baseMinutes = Number(first.startHour) * 60 + (Number(first.startMinute) || 0);
+      if (!Number.isNaN(baseMinutes)) {
+        defaultStart = `${String(Math.floor(baseMinutes / 60)).padStart(2, '0')}:${String(baseMinutes % 60).padStart(2, '0')}`;
+      }
+    }
+    if (first.duration) {
+      const duration = parseDurationMinutes(first.duration);
+      if (!Number.isNaN(duration)) {
+        const startMinutes = parseTimeInput(defaultStart);
+        if (startMinutes !== null) {
+          const endMinutes = startMinutes + duration;
+          defaultEnd = `${String(Math.floor((endMinutes) / 60) % 24).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+        }
+      }
+    }
+  }
+
+  startInput.value = defaultStart;
+  endInput.value = defaultEnd;
+  info.textContent = `${pendingImportedEvents.length} événement(s) prêts à être importés.`;
+  importModal.style.display = 'grid';
+}
+
+function closeImportModal() {
+  const importModal = document.getElementById('importModal');
+  if (importModal) importModal.style.display = 'none';
+  pendingImportedEvents = null;
 }
 
 function dragEventStart(event) {
@@ -398,11 +470,13 @@ function bindControls() {
       reader.onload = (ev) => {
         try {
           const parsed = JSON.parse(ev.target.result);
-          if (Array.isArray(parsed.events)) {
-            planningEvents = parsed.events;
-            savePlanning();
-            renderCalendar();
-            showMessage('✅ Planning importé.');
+          const importedEvents = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed.events)
+              ? parsed.events
+              : null;
+          if (Array.isArray(importedEvents) && importedEvents.length > 0) {
+            openImportModal(importedEvents);
           } else {
             showMessage('❌ Fichier invalide.');
           }
@@ -503,6 +577,53 @@ function bindControls() {
         selectedActivityId = null;
         const prev = document.querySelector('.activity-pool .selected'); if (prev) prev.classList.remove('selected');
       }
+    });
+  }
+
+  const importModalSave = document.getElementById('importModalSave');
+  const importModalCancel = document.getElementById('importModalCancel');
+  if (importModalSave) {
+    importModalSave.addEventListener('click', () => {
+      const startValue = document.getElementById('modalImportStart').value;
+      const endValue = document.getElementById('modalImportEnd').value;
+      const startMinutes = parseTimeInput(startValue);
+      const endMinutes = parseTimeInput(endValue);
+      if (startMinutes === null || endMinutes === null) {
+        showMessage('❌ Heures invalides.');
+        return;
+      }
+      if (endMinutes <= startMinutes) {
+        showMessage('❌ L\'heure de fin doit être après l\'heure de début.');
+        return;
+      }
+      const minStart = HOUR_START * 60;
+      const maxEnd = HOUR_END * 60;
+      if (startMinutes < minStart || endMinutes > maxEnd) {
+        showMessage(`❌ Choisis une plage entre ${formatTimeLabel(HOUR_START)} et ${formatTimeLabel(HOUR_END)}.`);
+        return;
+      }
+      if (!Array.isArray(pendingImportedEvents) || pendingImportedEvents.length === 0) {
+        closeImportModal();
+        return;
+      }
+      const durationMinutes = endMinutes - startMinutes;
+      const imported = pendingImportedEvents.map(event => ({
+        ...event,
+        startHour: Math.floor(startMinutes / 60),
+        startMinute: startMinutes % 60,
+        duration: formatDurationLabel(durationMinutes)
+      }));
+      planningEvents = planningEvents.concat(imported);
+      savePlanning();
+      renderCalendar();
+      closeImportModal();
+      showMessage('✅ Planning importé avec heure de début et de fin.');
+    });
+  }
+  if (importModalCancel) {
+    importModalCancel.addEventListener('click', () => {
+      closeImportModal();
+      showMessage('Importation annulée.');
     });
   }
 }

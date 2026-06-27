@@ -100,6 +100,26 @@
               </div>
             </div>
           </div>
+
+          <!-- Modal for import planning time selection -->
+          <div id="importModal" class="modal-overlay" style="display:none">
+            <div class="modal">
+              <h3>Importer dans le calendrier</h3>
+              <div class="form-row-modal">
+                <label>Heure de début</label>
+                <input type="time" id="modalImportStart" value="08:00">
+              </div>
+              <div class="form-row-modal">
+                <label>Heure de fin</label>
+                <input type="time" id="modalImportEnd" value="09:00">
+              </div>
+              <p id="importModalInfo" style="margin-bottom:12px;color:var(--text-soft);font-size:13px"></p>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button id="importModalCancel" class="secondary-btn small">Annuler</button>
+                <button id="importModalSave" class="secondary-btn small">Importer</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
